@@ -7,7 +7,7 @@ import subprocess
 from datetime import datetime
 import rarfile
 import tempfile
-import shutil
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 
 class ArchivoDescargado:
@@ -151,9 +151,35 @@ def descargar(url, formato):
         agregar_archivo_descargado(archivo_obj)
         download_btn.config(state='active')
         url_entry.delete(0, tk.END)
+def limpiar_url_youtube(url):
+    # Parsear la URL
+    parsed_url = urlparse(url)
 
+    # Extraer los parámetros de la query
+    query_params = parse_qs(parsed_url.query)
+
+    # Mantener solo el parámetro 'v' (que indica el video)
+    params_filtrados = {}
+    if 'v' in query_params:
+        params_filtrados['v'] = query_params['v']
+
+    # Reconstruir la query limpia
+    query_limpia = urlencode(params_filtrados, doseq=True)
+
+    # Reconstruir la URL final sin los parámetros no deseados
+    url_limpia = urlunparse((
+        parsed_url.scheme,
+        parsed_url.netloc,
+        parsed_url.path,
+        parsed_url.params,
+        query_limpia,
+        parsed_url.fragment
+    ))
+
+    return url_limpia
 def iniciar_descarga():
-    url = url_entry.get()
+    url = limpiar_url_youtube(url_entry.get())
+    print(url)
     formato = formato_var.get()
     if not url:
         messagebox.showerror("Error", "Debes ingresar una URL")
