@@ -78,6 +78,7 @@ def seleccionar_carpeta():
         config["carpeta_descargas"] = carpeta
         guardar_config(config)
         messagebox.showinfo("Carpeta seleccionada", f"Los archivos se guardarán en:\n{carpeta}")
+        lbl_carpeta.config(text=f"Carpeta actual: {config['carpeta_descargas']}")
         cargar_archivos()
 def descargar(url, formato):
     carpeta = config["carpeta_descargas"]  # siempre obtiene la última guardada
@@ -101,7 +102,7 @@ def descargar(url, formato):
 
     ffmpeg_path = os.path.join(ffmpeg_extract_path, "bin")
     
-# (Opcional) Verificar que ffmpeg.exe exista
+   # (Opcional) Verificar que ffmpeg.exe exista
     ffmpeg_exe = os.path.join(ffmpeg_path, "ffmpeg.exe")
     if not os.path.exists(ffmpeg_exe):
         raise FileNotFoundError(f"No se encontró ffmpeg.exe en {ffmpeg_exe}")
