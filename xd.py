@@ -1,0 +1,341 @@
+import tkinter as tk
+import threading
+from tkinter import ttk, messagebox, filedialog
+import yt_dlp
+import os, json, sys
+import subprocess
+from datetime import datetime
+
+
+class ArchivoDescargado:
+    """Clase para almacenar información de archivos descargados"""
+    
+    def __init__(self, nombre, formato, ubicacion, fecha_descarga=None):
+        self.nombre = nombre
+        self.formato = formato
+        self.ubicacion = ubicacion
+        self.fecha_descarga = fecha_descarga or datetime.now()
+    
+    def __str__(self):
+        return f"{self.nombre} ({self.formato})"
+    
+    def ruta_completa(self):
+        """Retorna la ruta completa del archivo"""
+        return os.path.join(self.ubicacion, f"{self.nombre}.{self.formato}")
+    
+    def existe_archivo(self):
+        """Verifica si el archivo existe en el sistema"""
+        return os.path.exists(self.ruta_completa())
+    
+    def obtener_tamaño(self):
+        """Retorna el tamaño del archivo en bytes"""
+        if self.existe_archivo():
+            return os.path.getsize(self.ruta_completa())
+        return 0
+    
+    def obtener_fecha_creacion(self):
+        """Retorna la fecha de creación del archivo"""
+        if self.existe_archivo():
+            return datetime.fromtimestamp(os.path.getctime(self.ruta_completa()))
+        return None
+
+
+# Lista interna con objetos ArchivoDescargado
+archivos_descargados = []
+# Lista para URLs ya descargadas (para evitar duplicados)
+
+CONFIG_FILE = "config.json"
+SIZE_TEXT = 14
+
+def cargar_config():
+    """Carga la configuración desde config.json, si existe. Si no existe, lo crea automáticamente."""
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    
+    # Si no existe el archivo, crear configuración por defecto y guardarla
+    config_default = {"carpeta_descargas": os.path.expanduser("~/Downloads"),
+                      "font_size": SIZE_TEXT
+                }
+    guardar_config(config_default)
+    return config_default
+
+def guardar_config(config):
+    """Guarda la configuración en config.json"""
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=4)
+
+config = cargar_config()
+
+
+def seleccionar_carpeta():
+    """Abre un diálogo para seleccionar carpeta de descargas."""
+    carpeta = filedialog.askdirectory(title="Selecciona carpeta de descargas")
+    if carpeta:
+        config["carpeta_descargas"] = carpeta
+        guardar_config(config)
+        messagebox.showinfo("Carpeta seleccionada", f"Los archivos se guardarán en:\n{carpeta}")
+        cargar_archivos()
+def descargar(url, formato):
+    carpeta = config["carpeta_descargas"]  # siempre obtiene la última guardada
+    if getattr(sys, 'frozen', False):  # Si está en .exe
+        base_path = sys._MEIPASS
+    else:  # Si está en Python normal
+        base_path = os.path.abspath(".")
+
+    ffmpeg_path = os.path.join(base_path, "bin")
+    # ffmpeg_path = r"./bin"
+
+    if formato == "mp4":
+        opciones = {
+            "format": "bestvideo+bestaudio/best",
+            "outtmpl": os.path.join(carpeta, "%(title)s.%(ext)s"),
+            "merge_output_format": "mp4",
+            "ffmpeg_location": ffmpeg_path,
+            "progress_hooks": [progreso_hook]
+        }
+    else:  # mp3
+        opciones = {
+            "format": "bestaudio/best",
+            "outtmpl": os.path.join(carpeta, "%(title)s.%(ext)s"),
+            "postprocessors": [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }],
+            "ffmpeg_location": ffmpeg_path,
+            "progress_hooks": [progreso_hook]  # 👈 Aquí conectamos el hook
+        }
+
+    with yt_dlp.YoutubeDL(opciones) as ydl:
+        info = ydl.extract_info(url, download=True) 
+        archivo_descargado = ydl.prepare_filename(info) 
+        # ydl.download([url])
+        if formato == "mp3":
+            archivo_descargado = os.path.splitext(archivo_descargado)[0] + ".mp3"
+        
+        # Crear objeto ArchivoDescargado
+        nombre_archivo = os.path.splitext(os.path.basename(archivo_descargado))[0]
+        archivo_obj = ArchivoDescargado(
+            nombre=nombre_archivo,
+            formato=formato,
+            ubicacion=carpeta
+        )
+        
+        messagebox.showinfo("Éxito", f"Descarga completa en {opciones['outtmpl']}")
+        progress['value'] = 0
+        agregar_archivo_descargado(archivo_obj)
+        download_btn.config(state='active')
+        url_entry.delete(0, tk.END)
+
+def iniciar_descarga():
+    url = url_entry.get()
+    formato = formato_var.get()
+    if not url:
+        messagebox.showerror("Error", "Debes ingresar una URL")
+        return
+
+    # if url in urls_descargadas:
+    #     messagebox.showerror("Error", "Ya descargaste esa canción!")
+    #     url_entry.delete(0, tk.END)
+    #     return
+    download_btn.config(state='disabled')
+    hilo = threading.Thread(target=descargar, args=(url, formato), daemon=True)
+    hilo.start()
+def agregar_archivo(archivo_obj):
+    """Agrega archivo descargado al Listbox usando objeto ArchivoDescargado"""
+    # Verificar si ya existe un archivo con el mismo nombre y formato
+    existe = any(a.nombre == archivo_obj.nombre and a.formato == archivo_obj.formato 
+                for a in archivos_descargados)
+    
+    if not existe:
+        archivos_descargados.append(archivo_obj)
+        lista.insert(tk.END, str(archivo_obj))  # muestra nombre y formato en la UI
+
+def agregar_archivo_descargado(archivo_obj):
+    """Agrega archivo descargado al Listbox usando objeto ArchivoDescargado"""
+    # Verificar si ya existe un archivo con el mismo nombre y formato
+    existe = any(a.nombre == archivo_obj.nombre and a.formato == archivo_obj.formato 
+                for a in archivos_descargados)
+    
+    if not existe:
+        archivos_descargados.insert(0,archivo_obj)
+        lista.insert(0, str(archivo_obj))  # muestra nombre y formato en la UI
+
+def cargar_archivos():
+    """Carga los archivos de la carpeta de descargas en la lista, ordenados por fecha de creación (más reciente primero)"""
+    archivos_descargados.clear()
+   # Limpiar también las URLs
+    lista.delete(0, tk.END)  # limpia lista anterior
+    
+    if not os.path.exists(config["carpeta_descargas"] ):
+        messagebox.showerror("Error", f"No existe la carpeta: {config['carpeta_descargas']}")
+        return
+    
+    # Lista para almacenar objetos ArchivoDescargado con su información de fecha
+    archivos_con_fecha = []
+    
+    for archivo in os.listdir(config["carpeta_descargas"] ):
+        ruta_completa = os.path.join(config["carpeta_descargas"] , archivo)
+        if os.path.isfile(ruta_completa) and archivo.lower().endswith((".mp3", ".mp4")):  # solo archivos, no carpetas
+            # Extraer nombre y formato del archivo
+            nombre_archivo = os.path.splitext(archivo)[0]
+            formato_archivo = os.path.splitext(archivo)[1][1:].lower()  # quita el punto
+            
+            # Crear objeto ArchivoDescargado
+            archivo_obj = ArchivoDescargado(
+                nombre=nombre_archivo,
+                formato=formato_archivo,
+                ubicacion=config["carpeta_descargas"]
+            )
+            
+            # Obtener la fecha de creación del archivo
+            fecha_creacion = os.path.getctime(ruta_completa)
+            archivos_con_fecha.append((archivo_obj, fecha_creacion))
+    
+    # Ordenar por fecha de creación (más reciente primero)
+    archivos_con_fecha.sort(key=lambda x: x[1], reverse=True)
+    label_size.config(text= f"Cantidad de archivos: {len(archivos_con_fecha)}")
+    
+    # Agregar archivos ordenados a la lista
+    for archivo_obj, _ in archivos_con_fecha:
+        agregar_archivo(archivo_obj)
+
+def abrir_archivo(event):
+    """Abre la ubicación del archivo con doble clic y lo selecciona en el explorador."""
+    seleccion = lista.curselection()
+    if not seleccion:
+        return
+    
+    index = seleccion[0]
+    archivo_obj = archivos_descargados[index]
+
+    try:
+        ruta_completa = os.path.normpath(archivo_obj.ruta_completa()) 
+
+        # Verificar existencia
+        if not archivo_obj.existe_archivo():
+            messagebox.showerror("Error", f"El archivo no existe:\n{ruta_completa}")
+            return
+
+        # Intentar abrir con /select,
+        subprocess.run(f'explorer /select,"{ruta_completa}"', shell=True)
+
+    except subprocess.CalledProcessError:
+        # Si falla, abrir solo la carpeta
+        try:
+            carpeta = os.path.dirname(ruta_completa)
+            os.startfile(carpeta)
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo abrir la carpeta:\n{e}")
+
+    except Exception as e:
+        messagebox.showerror("Error", f"No se pudo abrir el archivo:\n{e}")
+
+def progreso_hook(d):
+    if d['status'] == 'downloading':
+        porcentaje = d.get('_percent_str', '0.0%')
+        velocidad = d.get('_speed_str', '0.0KiB/s')
+        eta = d.get('_eta_str', 'N/A')
+
+        # Actualizar progressbar
+        try:
+            percent_float = float(d['_percent_str'].replace('%', '').strip())
+            progress['value'] = percent_float
+            root.update_idletasks()
+        except:
+            pass
+
+        # También podrías mostrar en consola o en la UI
+        texto = f"{porcentaje} | {velocidad} | ETA: {eta}"
+        label_progreso.config(text=texto)
+
+    elif d['status'] == 'finished':
+        progress['value'] = 100
+        root.update_idletasks()
+        label_progreso.config(text="✅ Descarga completa")
+
+def mostrar_menu(event):
+    menu = tk.Menu(root, tearoff=0)
+    menu.add_command(label="Copiar", command=lambda: copiar(url_entry))
+    menu.add_command(label="Pegar", command=lambda: pegar(url_entry))
+    menu.tk_popup(event.x_root, event.y_root)
+
+def copiar(widget):
+    try:
+        seleccionado = widget.selection_get()
+        root.clipboard_clear()
+        root.clipboard_append(seleccionado)
+    except tk.TclError:
+        pass  # no hay texto seleccionado
+
+def pegar(widget):
+    try:
+        texto = root.clipboard_get()
+        widget.insert(tk.INSERT, texto)
+    except tk.TclError:
+        pass  # portapapeles vacío       
+
+
+# --- UI ---
+root = tk.Tk()
+root.title("YouTube Downloader 🎧")
+root.state('zoomed')
+root.resizable(True, True)
+label_progreso = tk.Label(root, text="Esperando descarga...", font=("Arial", SIZE_TEXT))
+label_progreso.pack(pady=5, fill="both", expand= True)
+progress = ttk.Progressbar(root, orient="horizontal", length=300, mode="determinate")
+progress.pack(pady=10, fill= "both", expand= True)
+# Título
+title_label = tk.Label(root, text="Convertidor YouTube - DJ Alcapone (Romaña) - Alcanito (Pablito)", font=("Arial", SIZE_TEXT, "bold"))
+title_label.pack(pady=10, fill= "both", expand= True)
+
+
+
+# Entrada URL
+frame_url = tk.Frame(root)
+frame_url.pack(pady=5, fill= "both", expand= True)
+tk.Label(frame_url, text="URL del video:", font=("Arial", config["font_size"])).pack(expand=True, padx=5)
+url_entry = tk.Entry(frame_url, width=50, font=("Arial",config["font_size"]))
+url_entry.pack(expand=True, pady=10)
+url_entry.bind("<Button-3>", mostrar_menu)  # 👈 botón derecho en Windows/Linux
+url_entry.bind("<Button-2>", mostrar_menu)
+
+# Formatos
+formato_var = tk.StringVar(value="mp3")
+frame_format = tk.Frame(root)
+frame_format.pack(pady=10)
+tk.Label(frame_format, text="Formato:", font=("Arial", config["font_size"])).pack(side=tk.LEFT, padx=5)
+ttk.Radiobutton(frame_format, text="MP3", variable=formato_var, value="mp3").pack(side=tk.LEFT, padx=5)
+ttk.Radiobutton(frame_format, text="MP4", variable=formato_var, value="mp4").pack(side=tk.LEFT, padx=5)
+
+# Botón descargar
+download_btn = tk.Button(root, text="⬇ Descargar", font=("Arial", config["font_size"]), bg="#1DB954", fg="white", command=iniciar_descarga)
+download_btn.pack(pady=20)
+
+# Botón para cambiar carpeta
+btn_carpeta = tk.Button(root, text="Cambiar carpeta de descargas", command=seleccionar_carpeta)
+btn_carpeta.pack(pady=10)
+
+# Etiqueta que muestra la carpeta actual
+lbl_carpeta = tk.Label(root, text=f"Carpeta actual: {config['carpeta_descargas']}", wraplength=400, justify="left")
+lbl_carpeta.pack(pady=5)
+
+# Estado
+status_label = tk.Label(root, text="Listo para descargar.", fg="gray")
+status_label.pack(pady=5)
+
+
+label_size = tk.Label(root, text= "Cantidad de archivos: ", font=("Arial", config["font_size"]))
+label_size.pack(pady=5)
+
+# Listbox para mostrar descargas
+lista = tk.Listbox(root, width=400, height=12, font=("Arial", config["font_size"]))
+lista.pack(pady=20)
+
+# Vincular doble clic
+lista.bind("<Double-1>", abrir_archivo)
+cargar_archivos()
+
+
+root.mainloop()
