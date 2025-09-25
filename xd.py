@@ -5,6 +5,9 @@ import yt_dlp
 import os, json, sys
 import subprocess
 from datetime import datetime
+import rarfile
+import tempfile
+import shutil
 
 
 class ArchivoDescargado:
@@ -83,7 +86,27 @@ def descargar(url, formato):
     else:  # Si está en Python normal
         base_path = os.path.abspath(".")
 
-    ffmpeg_path = os.path.join(base_path, "bin")
+    
+    rarfile.UNRAR_TOOL = os.path.join(base_path, "bin", "unrar.exe")  # Usa unrar.exe local
+
+    # Ruta del .rar que contiene ffmpeg y otros
+    rar_path = os.path.join(base_path, "bin", "bin.rar")
+    # Ruta de descompresión
+    ffmpeg_extract_path = os.path.join(tempfile.gettempdir(), "ffmpeg_bin")
+
+    # Extraer solo si no existe
+    if not os.path.exists(ffmpeg_extract_path):
+        with rarfile.RarFile(rar_path) as rf:
+            rf.extractall(ffmpeg_extract_path)
+
+    ffmpeg_path = os.path.join(ffmpeg_extract_path, "bin")
+    
+# (Opcional) Verificar que ffmpeg.exe exista
+    ffmpeg_exe = os.path.join(ffmpeg_path, "ffmpeg.exe")
+    if not os.path.exists(ffmpeg_exe):
+        raise FileNotFoundError(f"No se encontró ffmpeg.exe en {ffmpeg_exe}")
+
+
     # ffmpeg_path = r"./bin"
 
     if formato == "mp4":
