@@ -1,3 +1,68 @@
 2025-09-25 22:55:45,980 - INFO - Función iniciar_descarga() llamada
 2025-09-25 22:55:45,980 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=CQ_mQHTTyss
 2025-09-25 22:55:46,930 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=CQ_mQHTTyss, Formato=mp3
+2025-09-26 09:38:03,168 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:38:03,180 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=m0zJgaF2iuQ
+2025-09-26 09:38:03,203 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=m0zJgaF2iuQ, Formato=mp3
+2025-09-26 09:38:03,204 - CRITICAL - Error crítico en la aplicación: module 'sys' has no attribute '_MEIPASS'
+2025-09-26 09:38:24,496 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:38:24,498 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=m0zJgaF2iuQ
+2025-09-26 09:38:24,502 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=m0zJgaF2iuQ, Formato=mp3
+2025-09-26 09:38:37,813 - CRITICAL - Error crítico en la aplicación: module 'sys' has no attribute '_MEIPASS'
+2025-09-26 10:21:54,983 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:21:54,984 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=_okJ-wD03Ng
+2025-09-26 10:21:55,006 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=_okJ-wD03Ng, Formato=mp3
+2025-09-26 10:22:03,980 - ERROR - DownloadError: Error al descargar el video: [0;31mERROR:[0m unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 10:24:45,335 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:24:45,335 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=DR6ED6lvkb4
+2025-09-26 10:24:45,361 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=DR6ED6lvkb4, Formato=mp3
+2025-09-26 10:24:54,098 - ERROR - DownloadError: Error al descargar el video: [0;31mERROR:[0m unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 10:26:00,687 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:26:00,687 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=DR6ED6lvkb4
+2025-09-26 10:26:00,712 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=DR6ED6lvkb4, Formato=mp3
+2025-09-26 10:26:09,597 - ERROR - DownloadError: Error al descargar el video: [0;31mERROR:[0m unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 10:26:43,775 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:26:43,775 - INFO - Iniciando hilo de descarga para URL: https://youtu.be/DR6ED6lvkb4
+2025-09-26 10:26:43,776 - INFO - Iniciando descarga: URL=https://youtu.be/DR6ED6lvkb4, Formato=mp3
+2025-09-26 10:26:51,826 - ERROR - DownloadError: Error al descargar el video: [0;31mERROR:[0m unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 10:30:21,807 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:30:21,807 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=lpigm_E94Hk
+2025-09-26 10:30:21,831 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=lpigm_E94Hk, Formato=mp3
+2025-09-26 10:30:30,370 - ERROR - DownloadError: Error al descargar el video: [0;31mERROR:[0m unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 10:33:01,558 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:33:01,559 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=lpigm_E94Hk
+2025-09-26 10:33:01,581 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=lpigm_E94Hk, Formato=mp3
+2025-09-26 10:33:30,559 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:33:30,559 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=DR6ED6lvkb4
+2025-09-26 10:33:30,560 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=DR6ED6lvkb4, Formato=mp3
+2025-09-26 10:47:27,270 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:47:27,271 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=_n1ZmFiwUDg
+2025-09-26 10:47:27,295 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=_n1ZmFiwUDg, Formato=mp3
+2025-09-26 10:47:27,297 - INFO - Probando extracción de cookies desde chrome...
+2025-09-26 10:48:53,657 - WARNING - No se pudo obtener cookies desde chrome: [0;31mERROR:[0m [0;31mERROR:[0m Failed to decrypt with DPAPI. See  https://github.com/yt-dlp/yt-dlp/issues/10927  for more info
+2025-09-26 10:48:53,658 - INFO - Probando extracción de cookies desde edge...
+2025-09-26 10:48:57,610 - WARNING - No se pudo obtener cookies desde edge: [0;31mERROR:[0m [0;31mERROR:[0m Failed to decrypt with DPAPI. See  https://github.com/yt-dlp/yt-dlp/issues/10927  for more info
+2025-09-26 10:48:57,611 - INFO - Probando extracción de cookies desde firefox...
+2025-09-26 10:48:57,683 - WARNING - No se pudo obtener cookies desde firefox: [0;31mERROR:[0m could not find firefox cookies database in 'C:\\Users\\wympa\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles', 'C:\\Users\\wympa\\AppData\\Local\\Packages\\Mozilla.Firefox_n80bbvh6b1yt2\\LocalCache\\Roaming\\Mozilla\\Firefox\\Profiles'
+2025-09-26 10:48:57,683 - ERROR - ❌ Ningún navegador disponible para cookies
+2025-09-26 10:48:57,751 - ERROR - DownloadError: Error al descargar el video: [0;31mERROR:[0m unsupported browser: "None"
+2025-09-26 10:50:19,438 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:50:19,439 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=31ZHMYLCAY8
+2025-09-26 10:50:19,463 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=31ZHMYLCAY8, Formato=mp3
+2025-09-26 10:50:28,201 - ERROR - DownloadError: Error al descargar el video: [0;31mERROR:[0m unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 10:51:19,542 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:51:19,543 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=31ZHMYLCAY8
+2025-09-26 10:51:19,566 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=31ZHMYLCAY8, Formato=mp3
+2025-09-26 10:51:28,930 - ERROR - DownloadError: Error al descargar el video: [0;31mERROR:[0m unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 10:52:28,166 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:52:28,167 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=31ZHMYLCAY8
+2025-09-26 10:52:28,191 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=31ZHMYLCAY8, Formato=mp3
+2025-09-26 10:52:52,014 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:52:52,015 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=31ZHMYLCAY8
+2025-09-26 10:52:52,039 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=31ZHMYLCAY8, Formato=mp3
+2025-09-26 10:53:19,350 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:53:19,351 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=31ZHMYLCAY8
+2025-09-26 10:53:19,352 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=31ZHMYLCAY8, Formato=mp3
+2025-09-26 11:16:29,882 - INFO - Función iniciar_descarga() llamada
+2025-09-26 11:16:29,896 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=1fY1iwnfWxY
+2025-09-26 11:16:29,921 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=1fY1iwnfWxY, Formato=mp3

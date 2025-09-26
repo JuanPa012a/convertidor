@@ -4,6 +4,7 @@ from tkinter import ttk, messagebox, filedialog
 import yt_dlp
 import os, json, sys
 import subprocess
+import shutil
 from datetime import datetime
 import rarfile
 import tempfile
@@ -112,21 +113,33 @@ def descargar(url, formato):
 
         try:
             rarfile.UNRAR_TOOL = os.path.join(base_path, "bin", "unrar.exe")  # Usa unrar.exe local
-
+             
             # Ruta del .rar que contiene ffmpeg y otros
             rar_path = os.path.join(base_path, "bin", "bin.rar")
             # Ruta de descompresión
             ffmpeg_extract_path = os.path.join(tempfile.gettempdir(), "ffmpeg_bin")
+            # Copiar SOLO bin.rar
+            # Queremos que termine en ffmpeg_bin/bin/bin.rar
+            rar_dest_dir = os.path.join(ffmpeg_extract_path, "bin")
+            os.makedirs(rar_dest_dir, exist_ok=True)
 
-            # Extraer solo si no existe
-            if not os.path.exists(ffmpeg_extract_path):
-                with rarfile.RarFile(rar_path) as rf:
-                    rf.extractall(ffmpeg_extract_path)
+            rar_dest = os.path.join(rar_dest_dir, "bin.rar")
+            if not os.path.exists(rar_dest):
+                shutil.copy2(rar_path, rar_dest)
 
+            
             ffmpeg_path = os.path.join(ffmpeg_extract_path, "bin")
             
             # Verificar que ffmpeg.exe exista
             ffmpeg_exe = os.path.join(ffmpeg_path, "ffmpeg.exe")
+
+            # Extraer solo si no existe
+            if not os.path.exists(ffmpeg_exe):
+                with rarfile.RarFile(rar_path) as rf:
+                    logger.info(f"Archivos en el RAR: {rf.namelist()}")
+                    rf.extractall(ffmpeg_extract_path)
+
+
             if not os.path.exists(ffmpeg_exe):
                 messagebox.showerror("Error", f"No se encontró ffmpeg.exe en {ffmpeg_exe}")
                 download_btn.config(state='active')
@@ -151,26 +164,39 @@ def descargar(url, formato):
             download_btn.config(state='active')
             return
 
+         # --- Detectar navegador principal (puedes cambiar "chrome" por "edge" o "firefox") ---
+        navegador = "cookies.txt"
+
+        # Opciones base
+        opciones = {
+            "outtmpl": os.path.join(carpeta, "%(title)s.%(ext)s"),
+            "cookiefile": navegador,  # 👈 Usa cookies del navegador
+            "ffmpeg_location": ffmpeg_path,
+            "http_headers": {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Safari/537.36"
+        )
+    },
+            "progress_hooks": [progreso_hook]
+        }
+
+        # Ajustar según formato
         if formato == "mp4":
-            opciones = {
+            opciones.update({
                 "format": "bestvideo+bestaudio/best",
-                "outtmpl": os.path.join(carpeta, "%(title)s.%(ext)s"),
-                "merge_output_format": "mp4",
-                "ffmpeg_location": ffmpeg_path,
-                "progress_hooks": [progreso_hook]
-            }
+                "merge_output_format": "mp4"
+            })
         else:  # mp3
-            opciones = {
+            opciones.update({
                 "format": "bestaudio/best",
-                "outtmpl": os.path.join(carpeta, "%(title)s.%(ext)s"),
                 "postprocessors": [{
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
                     "preferredquality": "192",
-                }],
-                "ffmpeg_location": ffmpeg_path,
-                "progress_hooks": [progreso_hook]  # 👈 Aquí conectamos el hook
-            }
+                }]
+            })
 
         try:
             with yt_dlp.YoutubeDL(opciones) as ydl:

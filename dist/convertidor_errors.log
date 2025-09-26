@@ -1,3 +1,68 @@
-2025-09-25 22:57:44,907 - INFO - Función iniciar_descarga() llamada
-2025-09-25 22:57:44,907 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=CQ_mQHTTyss
-2025-09-25 22:57:45,212 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=CQ_mQHTTyss, Formato=mp3
+2025-09-26 09:27:06,680 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:27:06,680 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=cIz8QvsRLtA
+2025-09-26 09:27:06,688 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=cIz8QvsRLtA, Formato=mp3
+2025-09-26 09:27:06,688 - INFO - Ruta esperada del rar: C:\Users\wympa\AppData\Local\Temp\_MEI62402\bin\bin.rar, existe=True
+2025-09-26 09:27:24,936 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:27:24,936 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=cIz8QvsRLtA
+2025-09-26 09:27:24,937 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=cIz8QvsRLtA, Formato=mp3
+2025-09-26 09:27:24,937 - INFO - Ruta esperada del rar: C:\Users\wympa\AppData\Local\Temp\_MEI62402\bin\bin.rar, existe=True
+2025-09-26 09:30:17,168 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:30:17,168 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=cIz8QvsRLtA
+2025-09-26 09:30:17,175 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=cIz8QvsRLtA, Formato=mp3
+2025-09-26 09:30:17,176 - INFO - Ruta esperada del rar: C:\Users\wympa\AppData\Local\Temp\_MEI124162\bin\bin.rar, existe=True
+2025-09-26 09:33:07,576 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:33:07,576 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=YAMm40WSrik
+2025-09-26 09:33:07,583 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=YAMm40WSrik, Formato=mp3
+2025-09-26 09:33:07,583 - INFO - UNRAR_TOOL=C:\Users\wympa\AppData\Local\Temp\_MEI62122\bin\unrar.exe, existe=True
+2025-09-26 09:33:07,583 - INFO - Ruta esperada del rar: C:\Users\wympa\AppData\Local\Temp\_MEI62122\bin\bin.rar, existe=True
+2025-09-26 09:36:19,271 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:36:19,272 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=m0zJgaF2iuQ
+2025-09-26 09:36:19,279 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=m0zJgaF2iuQ, Formato=mp3
+2025-09-26 09:36:19,280 - INFO - UNRAR_TOOL=C:\Users\wympa\AppData\Local\Temp\_MEI115922\bin\unrar.exe, existe=True
+2025-09-26 09:36:19,280 - INFO - Ruta esperada del rar: C:\Users\wympa\AppData\Local\Temp\_MEI115922\bin\bin.rar, existe=True
+2025-09-26 09:50:52,399 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:50:52,400 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=CtsEMU55AUI
+2025-09-26 09:50:52,407 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=CtsEMU55AUI, Formato=mp3
+2025-09-26 09:50:52,408 - ERROR - No se encontró un archivo necesario: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-09-26 09:51:13,487 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:51:13,487 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=CtsEMU55AUI
+2025-09-26 09:51:13,488 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=CtsEMU55AUI, Formato=mp3
+2025-09-26 09:51:13,488 - ERROR - No se encontró un archivo necesario: [WinError 2] El sistema no puede encontrar el archivo especificado
+2025-09-26 09:51:47,031 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:51:47,031 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=CtsEMU55AUI
+2025-09-26 09:51:47,032 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=CtsEMU55AUI, Formato=mp3
+2025-09-26 09:51:47,032 - ERROR - Error al configurar ffmpeg: [Errno 13] Permission denied: 'C:\\Users\\wympa\\AppData\\Local\\Temp\\ffmpeg_bin'
+2025-09-26 09:52:14,167 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:52:14,168 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=CtsEMU55AUI
+2025-09-26 09:52:14,175 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=CtsEMU55AUI, Formato=mp3
+2025-09-26 09:52:14,176 - ERROR - Error al configurar ffmpeg: [Errno 13] Permission denied: 'C:\\Users\\wympa\\AppData\\Local\\Temp\\ffmpeg_bin'
+2025-09-26 09:56:48,055 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:56:48,056 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=tZexUQn7oow
+2025-09-26 09:56:48,064 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=tZexUQn7oow, Formato=mp3
+2025-09-26 09:56:48,065 - ERROR - No se encontró un archivo necesario: [WinError 3] El sistema no puede encontrar la ruta especificada
+2025-09-26 09:59:16,575 - INFO - Función iniciar_descarga() llamada
+2025-09-26 09:59:16,576 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=AVB_I-OF678
+2025-09-26 09:59:16,583 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=AVB_I-OF678, Formato=mp3
+2025-09-26 10:04:04,031 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:04:04,032 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=hU_NOJute7I
+2025-09-26 10:04:04,039 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=hU_NOJute7I, Formato=mp3
+2025-09-26 10:06:19,287 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:06:19,287 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=hU_NOJute7I
+2025-09-26 10:06:19,288 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=hU_NOJute7I, Formato=mp3
+2025-09-26 10:16:08,351 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:16:08,351 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=oo9rbWW66Ec
+2025-09-26 10:16:08,359 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=oo9rbWW66Ec, Formato=mp3
+2025-09-26 10:16:08,361 - INFO - Archivos en el RAR: ['bin/avcodec-62.dll', 'bin/avdevice-62.dll', 'bin/avfilter-11.dll', 'bin/avformat-62.dll', 'bin/avutil-60.dll', 'bin/ffmpeg.exe', 'bin/ffplay.exe', 'bin/ffprobe.exe', 'bin/swresample-6.dll', 'bin/swscale-9.dll', 'bin/']
+2025-09-26 10:16:22,865 - ERROR - DownloadError: Error al descargar el video: ERROR: unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 10:17:50,415 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:17:50,415 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=oo9rbWW66Ec
+2025-09-26 10:17:50,416 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=oo9rbWW66Ec, Formato=mp3
+2025-09-26 10:17:58,779 - ERROR - DownloadError: Error al descargar el video: ERROR: unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 10:56:06,190 - INFO - Función iniciar_descarga() llamada
+2025-09-26 10:56:06,191 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=Bd7ewj1yuHo
+2025-09-26 10:56:06,198 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=Bd7ewj1yuHo, Formato=mp3
+2025-09-26 10:56:14,295 - ERROR - DownloadError: Error al descargar el video: ERROR: unable to download video data: HTTP Error 403: Forbidden
+2025-09-26 11:18:04,443 - INFO - Función iniciar_descarga() llamada
+2025-09-26 11:18:04,466 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=1fY1iwnfWxY
+2025-09-26 11:18:04,473 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=1fY1iwnfWxY, Formato=mp3
+2025-09-26 11:18:13,618 - ERROR - DownloadError: Error al descargar el video: ERROR: unable to download video data: HTTP Error 403: Forbidden
