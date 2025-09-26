@@ -1,0 +1,3 @@
+2025-09-25 22:57:44,907 - INFO - Función iniciar_descarga() llamada
+2025-09-25 22:57:44,907 - INFO - Iniciando hilo de descarga para URL: https://www.youtube.com/watch?v=CQ_mQHTTyss
+2025-09-25 22:57:45,212 - INFO - Iniciando descarga: URL=https://www.youtube.com/watch?v=CQ_mQHTTyss, Formato=mp3

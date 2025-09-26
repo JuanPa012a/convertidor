@@ -8,6 +8,18 @@ from datetime import datetime
 import rarfile
 import tempfile
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+import logging
+
+# Configurar logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('convertidor_errors.log', encoding='utf-8'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 
 class ArchivoDescargado:
@@ -81,76 +93,147 @@ def seleccionar_carpeta():
         lbl_carpeta.config(text=f"Carpeta actual: {config['carpeta_descargas']}")
         cargar_archivos()
 def descargar(url, formato):
-    carpeta = config["carpeta_descargas"]  # siempre obtiene la última guardada
-    if getattr(sys, 'frozen', False):  # Si está en .exe
-        base_path = sys._MEIPASS
-    else:  # Si está en Python normal
-        base_path = os.path.abspath(".")
-
-    
-    rarfile.UNRAR_TOOL = os.path.join(base_path, "bin", "unrar.exe")  # Usa unrar.exe local
-
-    # Ruta del .rar que contiene ffmpeg y otros
-    rar_path = os.path.join(base_path, "bin", "bin.rar")
-    # Ruta de descompresión
-    ffmpeg_extract_path = os.path.join(tempfile.gettempdir(), "ffmpeg_bin")
-
-    # Extraer solo si no existe
-    if not os.path.exists(ffmpeg_extract_path):
-        with rarfile.RarFile(rar_path) as rf:
-            rf.extractall(ffmpeg_extract_path)
-
-    ffmpeg_path = os.path.join(ffmpeg_extract_path, "bin")
-    
-   # (Opcional) Verificar que ffmpeg.exe exista
-    ffmpeg_exe = os.path.join(ffmpeg_path, "ffmpeg.exe")
-    if not os.path.exists(ffmpeg_exe):
-        raise FileNotFoundError(f"No se encontró ffmpeg.exe en {ffmpeg_exe}")
-
-
-    # ffmpeg_path = r"./bin"
-
-    if formato == "mp4":
-        opciones = {
-            "format": "bestvideo+bestaudio/best",
-            "outtmpl": os.path.join(carpeta, "%(title)s.%(ext)s"),
-            "merge_output_format": "mp4",
-            "ffmpeg_location": ffmpeg_path,
-            "progress_hooks": [progreso_hook]
-        }
-    else:  # mp3
-        opciones = {
-            "format": "bestaudio/best",
-            "outtmpl": os.path.join(carpeta, "%(title)s.%(ext)s"),
-            "postprocessors": [{
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "192",
-            }],
-            "ffmpeg_location": ffmpeg_path,
-            "progress_hooks": [progreso_hook]  # 👈 Aquí conectamos el hook
-        }
-
-    with yt_dlp.YoutubeDL(opciones) as ydl:
-        info = ydl.extract_info(url, download=True) 
-        archivo_descargado = ydl.prepare_filename(info) 
-        # ydl.download([url])
-        if formato == "mp3":
-            archivo_descargado = os.path.splitext(archivo_descargado)[0] + ".mp3"
+    logger.info(f"Iniciando descarga: URL={url}, Formato={formato}")
+    try:
+        carpeta = config["carpeta_descargas"]  # siempre obtiene la última guardada
         
-        # Crear objeto ArchivoDescargado
-        nombre_archivo = os.path.splitext(os.path.basename(archivo_descargado))[0]
-        archivo_obj = ArchivoDescargado(
-            nombre=nombre_archivo,
-            formato=formato,
-            ubicacion=carpeta
-        )
-        
-        messagebox.showinfo("Éxito", f"Descarga completa en {opciones['outtmpl']}")
-        progress['value'] = 0
-        agregar_archivo_descargado(archivo_obj)
+        # Verificar que la carpeta de descargas existe
+        if not os.path.exists(carpeta):
+            error_msg = f"La carpeta de descargas no existe: {carpeta}"
+            logger.error(error_msg)
+            messagebox.showerror("Error", error_msg)
+            download_btn.config(state='active')
+            return
+            
+        if getattr(sys, 'frozen', False):  # Si está en .exe
+            base_path = sys._MEIPASS
+        else:  # Si está en Python normal
+            base_path = os.path.abspath(".")
+
+        try:
+            rarfile.UNRAR_TOOL = os.path.join(base_path, "bin", "unrar.exe")  # Usa unrar.exe local
+
+            # Ruta del .rar que contiene ffmpeg y otros
+            rar_path = os.path.join(base_path, "bin", "bin.rar")
+            # Ruta de descompresión
+            ffmpeg_extract_path = os.path.join(tempfile.gettempdir(), "ffmpeg_bin")
+
+            # Extraer solo si no existe
+            if not os.path.exists(ffmpeg_extract_path):
+                with rarfile.RarFile(rar_path) as rf:
+                    rf.extractall(ffmpeg_extract_path)
+
+            ffmpeg_path = os.path.join(ffmpeg_extract_path, "bin")
+            
+            # Verificar que ffmpeg.exe exista
+            ffmpeg_exe = os.path.join(ffmpeg_path, "ffmpeg.exe")
+            if not os.path.exists(ffmpeg_exe):
+                messagebox.showerror("Error", f"No se encontró ffmpeg.exe en {ffmpeg_exe}")
+                download_btn.config(state='active')
+                return
+                
+        except rarfile.BadRarFile:
+            error_msg = "El archivo bin.rar está corrupto o no se puede leer"
+            logger.error(error_msg)
+            messagebox.showerror("Error", error_msg)
+            download_btn.config(state='active')
+            return
+        except FileNotFoundError as e:
+            error_msg = f"No se encontró un archivo necesario: {e}"
+            logger.error(error_msg)
+            messagebox.showerror("Error", error_msg)
+            download_btn.config(state='active')
+            return
+        except Exception as e:
+            error_msg = f"Error al configurar ffmpeg: {e}"
+            logger.error(error_msg)
+            messagebox.showerror("Error", error_msg)
+            download_btn.config(state='active')
+            return
+
+        if formato == "mp4":
+            opciones = {
+                "format": "bestvideo+bestaudio/best",
+                "outtmpl": os.path.join(carpeta, "%(title)s.%(ext)s"),
+                "merge_output_format": "mp4",
+                "ffmpeg_location": ffmpeg_path,
+                "progress_hooks": [progreso_hook]
+            }
+        else:  # mp3
+            opciones = {
+                "format": "bestaudio/best",
+                "outtmpl": os.path.join(carpeta, "%(title)s.%(ext)s"),
+                "postprocessors": [{
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192",
+                }],
+                "ffmpeg_location": ffmpeg_path,
+                "progress_hooks": [progreso_hook]  # 👈 Aquí conectamos el hook
+            }
+
+        try:
+            with yt_dlp.YoutubeDL(opciones) as ydl:
+                info = ydl.extract_info(url, download=True) 
+                archivo_descargado = ydl.prepare_filename(info) 
+                
+                if formato == "mp3":
+                    archivo_descargado = os.path.splitext(archivo_descargado)[0] + ".mp3"
+                
+                # Crear objeto ArchivoDescargado
+                nombre_archivo = os.path.splitext(os.path.basename(archivo_descargado))[0]
+                archivo_obj = ArchivoDescargado(
+                    nombre=nombre_archivo,
+                    formato=formato,
+                    ubicacion=carpeta
+                )
+                
+                messagebox.showinfo("Éxito", f"Descarga completa en {opciones['outtmpl']}")
+                progress['value'] = 0
+                agregar_archivo_descargado(archivo_obj)
+                download_btn.config(state='active')
+                url_entry.delete(0, tk.END)
+                
+        except yt_dlp.DownloadError as e:
+            error_msg = f"Error al descargar el video: {e}"
+            logger.error(f"DownloadError: {error_msg}")
+            messagebox.showerror("Error de descarga", error_msg)
+            download_btn.config(state='active')
+            progress['value'] = 0
+            label_progreso.config(text="❌ Error en la descarga")
+            
+        except yt_dlp.ExtractorError as e:
+            error_msg = f"Error al extraer información del video: {e}"
+            logger.error(f"ExtractorError: {error_msg}")
+            messagebox.showerror("Error de extracción", error_msg)
+            download_btn.config(state='active')
+            progress['value'] = 0
+            label_progreso.config(text="❌ Error al extraer información")
+            
+        except yt_dlp.PostProcessingError as e:
+            error_msg = f"Error al procesar el archivo: {e}"
+            logger.error(f"PostProcessingError: {error_msg}")
+            messagebox.showerror("Error de procesamiento", error_msg)
+            download_btn.config(state='active')
+            progress['value'] = 0
+            label_progreso.config(text="❌ Error al procesar archivo")
+            
+        except Exception as e:
+            error_msg = f"Error inesperado durante la descarga: {e}"
+            logger.error(f"Unexpected error: {error_msg}")
+            messagebox.showerror("Error inesperado", error_msg)
+            download_btn.config(state='active')
+            progress['value'] = 0
+            label_progreso.config(text="❌ Error inesperado")
+            
+    except Exception as e:
+        error_msg = f"Error crítico en la aplicación: {e}"
+        logger.critical(error_msg)
+        messagebox.showerror("Error crítico", error_msg)
         download_btn.config(state='active')
-        url_entry.delete(0, tk.END)
+        progress['value'] = 0
+        label_progreso.config(text="❌ Error crítico")
+    
 def limpiar_url_youtube(url):
     # Parsear la URL
     parsed_url = urlparse(url)
@@ -178,20 +261,54 @@ def limpiar_url_youtube(url):
 
     return url_limpia
 def iniciar_descarga():
-    url = limpiar_url_youtube(url_entry.get())
-    print(url)
-    formato = formato_var.get()
-    if not url:
-        messagebox.showerror("Error", "Debes ingresar una URL")
-        return
+    logger.info("Función iniciar_descarga() llamada")
+    try:
+        url = limpiar_url_youtube(url_entry.get())
+        print(url)
+        formato = formato_var.get()
+        
+        if not url:
+            logger.warning("URL vacía ingresada por el usuario")
+            messagebox.showerror("Error", "Debes ingresar una URL")
+            return
 
-    # if url in urls_descargadas:
-    #     messagebox.showerror("Error", "Ya descargaste esa canción!")
-    #     url_entry.delete(0, tk.END)
-    #     return
-    download_btn.config(state='disabled')
-    hilo = threading.Thread(target=descargar, args=(url, formato), daemon=True)
-    hilo.start()
+        # Validar formato de URL básico
+        if not url.startswith(('http://', 'https://')):
+            logger.warning(f"URL con formato inválido: {url}")
+            messagebox.showerror("Error", "La URL debe comenzar con http:// o https://")
+            return
+            
+        # Verificar que la URL no esté vacía después de limpiar
+        if not url.strip():
+            logger.warning("URL vacía después de limpiar")
+            messagebox.showerror("Error", "La URL ingresada no es válida")
+            return
+
+        # if url in urls_descargadas:
+        #     messagebox.showerror("Error", "Ya descargaste esa canción!")
+        #     url_entry.delete(0, tk.END)
+        #     return
+        
+        # Verificar que el botón no esté ya deshabilitado (evitar múltiples descargas)
+        if download_btn['state'] == 'disabled':
+            logger.warning("Intento de iniciar descarga mientras ya hay una en progreso")
+            messagebox.showwarning("Advertencia", "Ya hay una descarga en progreso")
+            return
+            
+        logger.info(f"Iniciando hilo de descarga para URL: {url}")
+        download_btn.config(state='disabled')
+        label_progreso.config(text="🔄 Iniciando descarga...")
+        progress['value'] = 0
+        
+        hilo = threading.Thread(target=descargar, args=(url, formato), daemon=True)
+        hilo.start()
+        
+    except Exception as e:
+        error_msg = f"Error al iniciar la descarga: {e}"
+        logger.error(error_msg)
+        messagebox.showerror("Error", error_msg)
+        download_btn.config(state='active')
+        label_progreso.config(text="❌ Error al iniciar descarga")
 def agregar_archivo(archivo_obj):
     """Agrega archivo descargado al Listbox usando objeto ArchivoDescargado"""
     # Verificar si ya existe un archivo con el mismo nombre y formato
@@ -283,27 +400,51 @@ def abrir_archivo(event):
         messagebox.showerror("Error", f"No se pudo abrir el archivo:\n{e}")
 
 def progreso_hook(d):
-    if d['status'] == 'downloading':
-        porcentaje = d.get('_percent_str', '0.0%')
-        velocidad = d.get('_speed_str', '0.0KiB/s')
-        eta = d.get('_eta_str', 'N/A')
+    try:
+        if d['status'] == 'downloading':
+            porcentaje = d.get('_percent_str', '0.0%')
+            velocidad = d.get('_speed_str', '0.0KiB/s')
+            eta = d.get('_eta_str', 'N/A')
 
-        # Actualizar progressbar
-        try:
-            percent_float = float(d['_percent_str'].replace('%', '').strip())
-            progress['value'] = percent_float
+            # Actualizar progressbar
+            try:
+                percent_float = float(d['_percent_str'].replace('%', '').strip())
+                progress['value'] = percent_float
+                root.update_idletasks()
+            except (ValueError, KeyError, AttributeError) as e:
+                # Si hay error al convertir el porcentaje, usar 0
+                progress['value'] = 0
+                print(f"Error al procesar porcentaje: {e}")
+
+            # También podrías mostrar en consola o en la UI
+            texto = f"{porcentaje} | {velocidad} | ETA: {eta}"
+            label_progreso.config(text=texto)
+
+        elif d['status'] == 'finished':
+            progress['value'] = 100
             root.update_idletasks()
-        except:
-            pass
-
-        # También podrías mostrar en consola o en la UI
-        texto = f"{porcentaje} | {velocidad} | ETA: {eta}"
-        label_progreso.config(text=texto)
-
-    elif d['status'] == 'finished':
-        progress['value'] = 100
-        root.update_idletasks()
-        label_progreso.config(text="✅ Descarga completa")
+            label_progreso.config(text="✅ Descarga completa")
+            
+        elif d['status'] == 'error':
+            # Manejar errores específicos del hook
+            error_msg = d.get('error', 'Error desconocido en la descarga')
+            label_progreso.config(text=f"❌ Error: {error_msg}")
+            progress['value'] = 0
+            download_btn.config(state='active')
+            
+    except KeyError as e:
+        # Si falta alguna clave en el diccionario d
+        error_msg = f"Error en progreso_hook - clave faltante: {e}"
+        logger.warning(error_msg)
+        print(error_msg)
+        label_progreso.config(text="⚠️ Error en el progreso de descarga")
+        
+    except Exception as e:
+        # Cualquier otro error en el hook
+        error_msg = f"Error inesperado en progreso_hook: {e}"
+        logger.error(error_msg)
+        print(error_msg)
+        label_progreso.config(text="⚠️ Error inesperado en el progreso")
 
 def mostrar_menu(event):
     menu = tk.Menu(root, tearoff=0)
